@@ -1,231 +1,330 @@
 import streamlit as st
-from datetime import date
 import folium
 from streamlit_folium import folium_static
-import streamlit.components.v1 as components
 
 # ---- Page Configuration ----
 st.set_page_config(
     page_title="MapMy Kulture",
-    page_icon="🇮🇳",
-    layout="centered",
+    page_icon="🌏",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ---- Inject Custom Styles ----
+# ---- State Data ----
+STATE_DATA = {
+    "Rajasthan": {
+        "description": "The Land of Kings, where desert sands whisper tales of valor and vibrant hues dance in palace corridors.",
+        "heritage": [
+            {"name": "Amber Fort", "lat": 26.9855, "lon": 75.8513,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Amer_Fort_%28Amber_Fort%29.jpg",
+             "desc": "Majestic hilltop fortress with intricate mirror work"},
+            {"name": "Stepwells of Abhaneri", "lat": 27.0074, "lon": 76.6076,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Stepwell_Abhaneri.jpg",
+             "desc": "Ancient architectural marvel for water conservation"}
+        ],
+        "festivals": [
+            {"name": "Pushkar Camel Fair", "lat": 26.4897, "lon": 74.5517,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/4/49/Pushkar_Cattle_Fair_2009.jpg",
+             "desc": "Vibrant desert carnival with camel races"},
+            {"name": "Desert Festival", "lat": 26.9124, "lon": 70.9122,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Jaisalmer_Desert_Festival_2018.jpg",
+             "desc": "Cultural extravaganza under golden sands"}
+        ],
+        "foods": [
+            {"name": "Dal Baati Churma",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Dal_Bati_Churma.jpg",
+             "desc": "Traditional meal served in brass utensils"},
+            {"name": "Ghevar",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Ghevar.jpg",
+             "desc": "Honeycomb-shaped sweet delicacy"}
+        ],
+        "artifacts": [
+            {"name": "Blue Pottery",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Blue_Pottery_Jaipur.jpg",
+             "desc": "Turquoise-hued ceramic art with Persian influences"},
+            {"name": "Bandhani Sarees",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Bandhani_saree.jpg",
+             "desc": "Traditional tie-dye textile art"}
+        ]
+    },
+    "Kerala": {
+        "description": "God's Own Country, where emerald backwaters meet spice-scented hills and ancient traditions.",
+        "heritage": [
+            {"name": "Padmanabhapuram Palace", "lat": 8.2443, "lon": 77.3258,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/0/06/Padmanabhapuram_Palace_%2836%29.jpg",
+             "desc": "Wooden architectural masterpiece"},
+            {"name": "Bekal Fort", "lat": 12.3895, "lon": 75.0308,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/3/34/Bekal_Fort.jpg",
+             "desc": "Seaside fortress with panoramic views"}
+        ],
+        "festivals": [
+            {"name": "Onam", "lat": 10.8505, "lon": 76.2711,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Onam_Sadya.jpg",
+             "desc": "Harvest festival with floral carpets"},
+            {"name": "Vishu", "lat": 9.9816, "lon": 76.2999,
+             "image": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Vishu_kani.jpg",
+             "desc": "New Year festival with ceremonial viewing"}
+        ],
+        "foods": [
+            {"name": "Sadya",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Onam_Sadya.jpg",
+             "desc": "Grand vegetarian feast on banana leaf"},
+            {"name": "Karimeen Pollichathu",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Karimeen_Pollichathu.jpg",
+             "desc": "Pearl spot fish cooked in banana leaf"}
+        ],
+        "artifacts": [
+            {"name": "Kathakali Masks",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Kathakali_BNC.jpg",
+             "desc": "Traditional dance-drama face art"},
+            {"name": "Coir Crafts",
+             "image": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Coir_products.jpg",
+             "desc": "Eco-friendly coconut fiber creations"}
+        ]
+    }
+}
+
+# ---- Enhanced Styles ----
 def inject_style():
     banner_url = "https://t4.ftcdn.net/jpg/11/02/86/89/360_F_1102868968_To7xQ8HffJwpKD6rz6LogPeAWmJeOWfX.jpg"
-
     st.markdown(f"""
     <style>
-    @keyframes scroll-left {{
-        0% {{ transform: translateX(0%); }}
-        100% {{ transform: translateX(-100%); }}
-    }}
-
-    @keyframes pulse {{
-        0% {{ transform: scale(1); }}
-        50% {{ transform: scale(1.05); }}
-        100% {{ transform: scale(1); }}
-    }}
-
     .stApp {{
-        background: linear-gradient(rgba(255,165,0,0.1), rgba(255,255,255,0.3), rgba(0,128,0,0.1));
-        font-family: 'Segoe UI', sans-serif;
-        padding-bottom: 100px;
-        min-height: 100vh;
+        background: linear-gradient(rgba(255,165,0,0.2), rgba(255,255,255,0.3)),
+                    url('{banner_url}');
+        background-size: cover;
+        background-attachment: fixed;
+        font-family: 'Palatino Linotype', 'Book Antiqua', serif;
     }}
-
-    .marquee {{
-        background: #fff7e6;
-        color: #cc6600;
-        font-weight: bold;
-        font-size: 1.2rem;
-        padding: 10px;
-        border-radius: 8px;
-        margin: 10px auto 30px auto;
+    .card {{
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+        backdrop-filter: blur(5px);
+    }}
+    .card:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }}
+    .section-title {{
+        color: #d35400;
+        border-left: 5px solid #e67e22;
+        padding-left: 15px;
+        margin: 30px 0 20px 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }}
+    .culture-img {{
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        margin: 10px 0;
+        height: 250px;
+        object-fit: cover;
+        border: 2px solid #ffffff;
+    }}
+    .map-container {{
+        border: 3px solid #e67e22;
+        border-radius: 15px;
         overflow: hidden;
-        max-width: 90%;
-        white-space: nowrap;
-        position: relative;
-        height: 2rem;
+        background: rgba(255, 255, 255, 0.8);
     }}
-
-    .marquee span {{
-        display: inline-block;
-        padding-left: 100%;
-        animation: scroll-left 12s linear infinite;
-    }}
-
-    .explore-btn {{
-        background: #138808 !important;
-        color: white !important;
-        border: 3px solid #FF9933 !important;
-        padding: 0.6rem 2rem !important;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        margin: 2rem auto 1rem auto;
-        display: block;
-        animation: pulse 2.5s ease-in-out infinite;
-        transition: transform 0.3s ease;
-    }}
-
-    .explore-btn:hover {{
-        transform: scale(1.08);
-    }}
-
-    .footer-img {{
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: -1;
-    }}
-
     h1 {{
-        text-align: center;
-        font-weight: bold;
-        color: #000000;
-        margin-top: 1.5rem;
-    }}
-
-    .date-text {{
-        text-align: center;
-        color: #0b3d0b;
-        font-weight: 600;
-        font-size: 16px;
-        margin-top: 30px;
-        margin-bottom: 10px;
-    }}
-
-    .submit-btn-container {{
-        text-align: center;
-        margin-bottom: 20px;
+        color: #c0392b !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }}
     </style>
-
-    <div class="footer-img">
-        <img src="{banner_url}" style="width:100%;">
-    </div>
     """, unsafe_allow_html=True)
 
 # ---- Home Page ----
 def home_page():
     inject_style()
+    st.markdown("<h1 style='text-align:center;'>MapMy Kulture</h1>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align:center; color:#16a085;'>Discover India's Cultural Tapestry</h4>", unsafe_allow_html=True)
 
-    st.markdown("<h1>MapMy Kulture</h1>", unsafe_allow_html=True)
-
-    st.markdown("""
-        <div class="marquee">
-            <span>Discover Indian Tourism, Traditional Food, Handicrafts & Colorful Festivals – Experience the Heart of India!</span>
-        </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Discover India →", key="explore", help="Explore India"):
-        st.session_state.page = "main"
-        st.rerun()
-
-    st.markdown('<div class="date-text">Pick your dates to know what\'s going on in India</div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        start_date = st.date_input("Start Date", value=date.today(), key="start_date")
+    # Centered button
+    col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        end_date = st.date_input("End Date", value=date.today(), key="end_date")
+        if st.button("🌿 Responsible Tourism Guide", key="responsible_tourism_btn"):
+            st.session_state.page = "responsible_tourism_guide"
+            st.rerun()
 
-    st.markdown('<div class="submit-btn-container">', unsafe_allow_html=True)
-    if st.button("Submit Dates →", key="submit_dates"):
-        st.session_state.page = "events_map"
-        st.session_state.start = start_date
-        st.session_state.end = end_date
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ---- Events Map Page ----
-def events_map_page():
+    # State selection
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        selected_state = st.selectbox("Select a State to Explore", list(STATE_DATA.keys()))
+        if st.button("🗺️ Show on Map"):
+            st.session_state.page = "state_map"
+            st.session_state.selected_state = selected_state
+            st.rerun()
+# ---- State Map Page ----
+def state_map_page():
     inject_style()
-    st.markdown("### Upcoming Events in India")
+    selected_state = st.session_state.selected_state
+    data = STATE_DATA[selected_state]
     
-    # Create Folium map
-    m = folium.Map(location=[20.5937, 78.9629], zoom_start=5)
+    st.markdown(f"<h2 style='color:#c0392b;'>{selected_state} Cultural Map</h2>", unsafe_allow_html=True)
     
-    # Sample events with coordinates
-    sample_events = [
-        {"state": "Rajasthan", "event": "Desert Festival", "date": "2025-02-14",
-         "lat": 26.9124, "lon": 70.9122},
-        {"state": "Goa", "event": "Goa Carnival", "date": "2025-03-01",
-         "lat": 15.2993, "lon": 74.1240},
-        {"state": "Punjab", "event": "Baisakhi", "date": "2025-04-13",
-         "lat": 31.1471, "lon": 75.3412},
-        {"state": "Kerala", "event": "Onam", "date": "2025-08-28",
-         "lat": 10.8505, "lon": 76.2711},
-    ]
-
-    # Add markers to map
-    for event in sample_events:
+    m = folium.Map(location=[data['heritage'][0]['lat'], data['heritage'][0]['lon']], zoom_start=7)
+    
+    # Heritage Markers
+    for site in data["heritage"]:
         folium.Marker(
-            location=[event["lat"], event["lon"]],
-            popup=f"{event['event']}<br>{event['date']}",
-            tooltip=event["state"],
-            icon=folium.Icon(color="orange", icon="info-sign")
+            location=[site["lat"], site["lon"]],
+            tooltip=folium.Tooltip(
+                f"<b>🏰 {site['name']}</b>",
+                sticky=True,
+                permanent=False
+            ),
+            icon=folium.Icon(color="beige", icon="university", prefix="fa")
+        ).add_to(m)
+    
+    # Festival Markers
+    for festival in data["festivals"]:
+        folium.Marker(
+            location=[festival["lat"], festival["lon"]],
+            tooltip=folium.Tooltip(
+                f"<b>🎉 {festival['name']}</b>",
+                sticky=True,
+                permanent=False
+            ),
+            icon=folium.Icon(color="orange", icon="music", prefix="fa")
         ).add_to(m)
 
-    # Display map
-    folium_static(m, width=700, height=500)
+    with st.container():
+        st.markdown("<div class='map-container'>", unsafe_allow_html=True)
+        folium_static(m, width=1000, height=500)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # Show event list
-    st.write(f"Showing events between **{st.session_state.get('start')}** and **{st.session_state.get('end')}**:")
-    for event in sample_events:
-        st.markdown(f"**{event['event']}** in *{event['state']}* — {event['date']}")
+    col1, col2 = st.columns([1,4])
+    with col1:
+        if st.button("← Back to Home"):
+            st.session_state.page = "home"
+            st.rerun()
+    with col2:
+        if st.button("Explore Cultural Details →"):
+            st.session_state.page = "state_description"
+            st.rerun()
 
+# ---- State Description Page ----
+def state_description_page():
+    inject_style()
+    selected_state = st.session_state.selected_state
+    data = STATE_DATA[selected_state]
+    
+    st.markdown(f"<h1 style='color:#c0392b; text-align:center;'>{selected_state} Cultural Odyssey</h1>", unsafe_allow_html=True)
+    
+    # State Intro
+    with st.container():
+        st.markdown(f"<div class='card'><h3 style='color:#16a085;'>🌄 Land of Wonders</h3><h4>{data['description']}</h4></div>", unsafe_allow_html=True)
+    
+    # Main Content Columns
+    col1, col2 = st.columns([1,1])
+    
+    with col1:
+        # Heritage Section
+        with st.expander("🏛️ Hidden Heritage Gems", expanded=True):
+            for site in data["heritage"]:
+                st.markdown(f"""
+                <div class='card'>
+                    <h4>{site['name']}</h4>
+                    <img src="{site['image']}" class='culture-img' width="100%">
+                    <p>{site['desc']}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+        # Artifacts Section
+        st.markdown("<h2 class='section-title'>🛍️ Artisan Treasures</h2>", unsafe_allow_html=True)
+        for artifact in data["artifacts"]:
+            st.markdown(f"""
+            <div class='card'>
+                <h4>🎨 {artifact['name']}</h4>
+                <img src="{artifact['image']}" class='culture-img' width="100%">
+                <p>{artifact['desc']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    with col2:
+        # Festivals Section
+        with st.expander("🎭 Cultural Extravaganza", expanded=True):
+            for festival in data["festivals"]:
+                st.markdown(f"""
+                <div class='card'>
+                    <h4>{festival['name']}</h4>
+                    <img src="{festival['image']}" class='culture-img' width="100%">
+                    <p>{festival['desc']}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Foods Section
+        st.markdown("<h2 class='section-title'>🍴 Culinary Treasures</h2>", unsafe_allow_html=True)
+        for food in data["foods"]:
+            st.markdown(f"""
+            <div class='card'>
+                <h4>🥘 {food['name']}</h4>
+                <img src="{food['image']}" class='culture-img' width="100%">
+                <p>{food['desc']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # Navigation
+    st.markdown("<br>", unsafe_allow_html=True)
+    c1, c2 = st.columns([1,4])
+    with c1:
+        if st.button("🗺️ Back to Map"):
+            st.session_state.page = "state_map"
+            st.rerun()
+    with c2:
+        if st.button("🏠 Back to Home"):
+            st.session_state.page = "home"
+            st.rerun()
+
+# ---- Responsible Tourism Guide ----
+def responsible_tourism_guide_page():
+    inject_style()
+    st.markdown("<h1 style='color:#c0392b; text-align:center;'>🌱 Responsible Tourism Guide</h1>", unsafe_allow_html=True)
+    
+    with st.container():
+        st.markdown("""
+        <div class='card'>
+            <h3 style='color:#16a085;'>Travel with Respect</h3>
+            <div class='columns'>
+                <div class='column'>
+                    <h4>🛑 Do's</h4>
+                    <ul>
+                        <li>Respect local customs and dress codes</li>
+                        <li>Support local artisans and businesses</li>
+                        <li>Use eco-friendly transportation</li>
+                        <li>Preserve historical sites</li>
+                    </ul>
+                </div>
+                <div class='column'>
+                    <h4>🚫 Don'ts</h4>
+                    <ul>
+                        <li>Avoid single-use plastics</li>
+                        <li>Don't disturb wildlife</li>
+                        <li>Never remove artifacts</li>
+                        <li>Avoid over-tourism spots</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
     if st.button("← Back to Home"):
         st.session_state.page = "home"
         st.rerun()
 
-# ---- Main Page ----
-def main_page():
-    inject_style()
-    st.markdown("### Welcome to Incredible India")
-    st.write("Discover the heart of India — from breathtaking landscapes to flavorful cuisines, traditional crafts, and spectacular festivals. Stay connected to every corner of the nation, one state at a time.")
-
-    # Dropdown for sidebar selection
-    st.sidebar.title("Explore India")
-    states = ["Rajasthan", "Kerala", "Goa", "Himachal Pradesh", "Tamil Nadu"]
-    selected_state = st.sidebar.selectbox("Choose State", states)
-
-    st.header(f"Discover {selected_state}")
-    tabs = st.tabs(["Tourism", "Cuisine", "Handicrafts", "Festivals", "Govt Schemes"])
-
-    with tabs[0]:
-        st.subheader("Top Attractions")
-        st.write(f"Explore {selected_state}'s famous landmarks...")
-
-    with tabs[1]:
-        st.subheader("Local Food")
-        st.write(f"Taste {selected_state}'s signature dishes...")
-
-    with tabs[2]:
-        st.subheader("Traditional Crafts")
-        st.write(f"Discover {selected_state}'s artisanal heritage...")
-
-    with tabs[3]:
-        st.subheader("Cultural Festivals")
-        st.write(f"Experience {selected_state}'s vibrant celebrations...")
-
-    with tabs[4]:
-        st.subheader("Government Schemes")
-        st.write(f"Learn about welfare and development schemes in {selected_state}...")
-
-    if st.sidebar.button("← Back to Home"):
-        st.session_state.page = "home"
-        st.rerun()
-
-# ---- Page Routing ----
+# ---- Main App ----
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
-if st.session_state.page == "home":
-    home_page()
-elif st.session_state.page == "main":
-    main_page()
-elif st.session_state.page == "events_map":
-    events_map_page()
+pages = {
+    "home": home_page,
+    "state_map": state_map_page,
+    "state_description": state_description_page,
+    "responsible_tourism_guide": responsible_tourism_guide_page
+}
+
+pages[st.session_state.page]()
