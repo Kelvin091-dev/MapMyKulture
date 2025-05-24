@@ -1,5 +1,8 @@
 import streamlit as st
 from datetime import date
+import folium
+from streamlit_folium import folium_static
+import streamlit.components.v1 as components
 
 # ---- Page Configuration ----
 st.set_page_config(
@@ -27,12 +30,7 @@ def inject_style():
     }}
 
     .stApp {{
-        background: 
-            linear-gradient(
-                rgba(255,165,0,0.1), 
-                rgba(255,255,255,0.3), 
-                rgba(0,128,0,0.1)
-            );
+        background: linear-gradient(rgba(255,165,0,0.1), rgba(255,255,255,0.3), rgba(0,128,0,0.1));
         font-family: 'Segoe UI', sans-serif;
         padding-bottom: 100px;
         min-height: 100vh;
@@ -91,11 +89,6 @@ def inject_style():
         margin-top: 1.5rem;
     }}
 
-    section[data-testid="stSidebar"] {{
-        background-color: rgba(50, 50, 50, 0.2) !important;
-        backdrop-filter: blur(5px);
-    }}
-
     .date-text {{
         text-align: center;
         color: #0b3d0b;
@@ -103,17 +96,6 @@ def inject_style():
         font-size: 16px;
         margin-top: 30px;
         margin-bottom: 10px;
-    }}
-
-    .date-inputs {{
-        display: flex;
-        justify-content: center;
-        gap: 1.5rem;
-        margin-bottom: 15px;
-    }}
-
-    .date-inputs > div {{
-        width: 150px;
     }}
 
     .submit-btn-container {{
@@ -127,28 +109,23 @@ def inject_style():
     </div>
     """, unsafe_allow_html=True)
 
-
 # ---- Home Page ----
 def home_page():
     inject_style()
 
     st.markdown("<h1>MapMy Kulture</h1>", unsafe_allow_html=True)
 
-    st.markdown(
-        '''
+    st.markdown("""
         <div class="marquee">
             <span>Discover Indian Tourism, Traditional Food, Handicrafts & Colorful Festivals – Experience the Heart of India!</span>
         </div>
-        ''',
-        unsafe_allow_html=True
-    )
+    """, unsafe_allow_html=True)
 
     if st.button("Discover India →", key="explore", help="Explore India"):
         st.session_state.page = "main"
         st.rerun()
 
     st.markdown('<div class="date-text">Pick your dates to know what\'s going on in India</div>', unsafe_allow_html=True)
-
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input("Start Date", value=date.today(), key="start_date")
@@ -157,20 +134,60 @@ def home_page():
 
     st.markdown('<div class="submit-btn-container">', unsafe_allow_html=True)
     if st.button("Submit Dates →", key="submit_dates"):
-        st.session_state.page = "events"
+        st.session_state.page = "events_map"
         st.session_state.start = start_date
         st.session_state.end = end_date
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
+# ---- Events Map Page ----
+def events_map_page():
+    inject_style()
+    st.markdown("### Upcoming Events in India")
+    
+    # Create Folium map
+    m = folium.Map(location=[20.5937, 78.9629], zoom_start=5)
+    
+    # Sample events with coordinates
+    sample_events = [
+        {"state": "Rajasthan", "event": "Desert Festival", "date": "2025-02-14",
+         "lat": 26.9124, "lon": 70.9122},
+        {"state": "Goa", "event": "Goa Carnival", "date": "2025-03-01",
+         "lat": 15.2993, "lon": 74.1240},
+        {"state": "Punjab", "event": "Baisakhi", "date": "2025-04-13",
+         "lat": 31.1471, "lon": 75.3412},
+        {"state": "Kerala", "event": "Onam", "date": "2025-08-28",
+         "lat": 10.8505, "lon": 76.2711},
+    ]
+
+    # Add markers to map
+    for event in sample_events:
+        folium.Marker(
+            location=[event["lat"], event["lon"]],
+            popup=f"{event['event']}<br>{event['date']}",
+            tooltip=event["state"],
+            icon=folium.Icon(color="orange", icon="info-sign")
+        ).add_to(m)
+
+    # Display map
+    folium_static(m, width=700, height=500)
+
+    # Show event list
+    st.write(f"Showing events between **{st.session_state.get('start')}** and **{st.session_state.get('end')}**:")
+    for event in sample_events:
+        st.markdown(f"**{event['event']}** in *{event['state']}* — {event['date']}")
+
+    if st.button("← Back to Home"):
+        st.session_state.page = "home"
+        st.rerun()
 
 # ---- Main Page ----
 def main_page():
     inject_style()
-
     st.markdown("### Welcome to Incredible India")
     st.write("Discover the heart of India — from breathtaking landscapes to flavorful cuisines, traditional crafts, and spectacular festivals. Stay connected to every corner of the nation, one state at a time.")
 
+    # Dropdown for sidebar selection
     st.sidebar.title("Explore India")
     states = ["Rajasthan", "Kerala", "Goa", "Himachal Pradesh", "Tamil Nadu"]
     selected_state = st.sidebar.selectbox("Choose State", states)
@@ -202,29 +219,6 @@ def main_page():
         st.session_state.page = "home"
         st.rerun()
 
-
-# ---- Events Page ----
-def events_page():
-    inject_style()
-
-    st.markdown("### Upcoming Events in India")
-    st.write(f"Showing events between **{st.session_state.get('start')}** and **{st.session_state.get('end')}**:")
-
-    sample_events = [
-        {"state": "Rajasthan", "event": "Desert Festival", "date": "2025-02-14"},
-        {"state": "Goa", "event": "Goa Carnival", "date": "2025-03-01"},
-        {"state": "Punjab", "event": "Baisakhi", "date": "2025-04-13"},
-        {"state": "Kerala", "event": "Onam", "date": "2025-08-28"},
-    ]
-
-    for event in sample_events:
-        st.markdown(f"**{event['event']}** in *{event['state']}* — {event['date']}")
-
-    if st.button("← Back to Home"):
-        st.session_state.page = "home"
-        st.rerun()
-
-
 # ---- Page Routing ----
 if "page" not in st.session_state:
     st.session_state.page = "home"
@@ -233,5 +227,5 @@ if st.session_state.page == "home":
     home_page()
 elif st.session_state.page == "main":
     main_page()
-elif st.session_state.page == "events":
-    events_page()
+elif st.session_state.page == "events_map":
+    events_map_page()
