@@ -84,7 +84,6 @@ STATE_DATA = {
     }
 }
 
-# ---- Enhanced Styles ----
 def inject_style():
     banner_url = "https://www.poojn.in/wp-content/uploads/2025/05/Maharashtras-UNESCO-World-Heritage-Sites-A-Complete-Guide-With-Photos.jpeg.jpg"
     st.markdown(f"""
@@ -96,27 +95,45 @@ def inject_style():
         background-attachment: fixed;
         font-family: 'Palatino Linotype', 'Book Antiqua', serif;
     }}
-        .card {{
-            background-color: #fdf3e7;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }}
+
+/* Target the expander summary to make title bold */
+[data-testid="stExpander"] > div > div > div > summary {{
+    font-weight: 700;
+    font-size: 18px;
+    color: #000000;  /* optional: make black */
+}}
+
+
+    .card {{
+        background-color: #ffffff; /* white for contrast */
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }}
     .card:hover {{
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }}
-      .section-title {{
-            font-size: 20px;
-            margin-top: 20px;
-            color: #2c3e50;
-        }}
-     .culture-img {{
-            border-radius: 8px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }}
+    .section-title {{
+        font-size: 24px;
+        margin-top: 20px;
+        color: #000000; /* black */
+        font-weight: 900;
+        font-family: 'Arial Black', Gadget, sans-serif;
+    }}
+    .expander-title {{
+        font-size: 26px !important;
+        font-weight: 900 !important;
+        color: #000000 !important;
+        font-family: 'Arial Black', Gadget, sans-serif;
+    }}
+    .culture-img {{
+        border-radius: 8px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }}
     .map-container {{
         border: 3px solid #e67e22;
         border-radius: 15px;
@@ -124,12 +141,11 @@ def inject_style():
         background: rgba(255, 255, 255, 0.8);
     }}
     h1 {{
-        color: #c0392b !important;
+        color: #000000 !important;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }}
     </style>
     """, unsafe_allow_html=True)
-
 # ---- Home Page ----
 def home_page():
     inject_style()
@@ -214,16 +230,15 @@ def state_map_page():
 
 
 
-## ---- State Description Page ----
+## # ---- Cultural Description Page ----
 def state_description_page():
     inject_style()
     selected_state = st.session_state.selected_state
     data = STATE_DATA[selected_state]
 
-    # Title Header
     st.markdown(f"<h1 style='color:#c0392b; text-align:center;'>{selected_state} Cultural Odyssey</h1>", unsafe_allow_html=True)
 
-    # "Land of Wonders" Section with 2 Images
+    # Land of Wonders
     with st.container():
         st.markdown(f"""
         <div class='card'>
@@ -237,106 +252,53 @@ def state_description_page():
         </div>
         """, unsafe_allow_html=True)
 
-    # Main Content Columns
+    # Two Column Layout
     col1, col2 = st.columns([1, 1])
-
     with col1:
-        # Heritage Section
-        with st.expander("", expanded=True):
-            st.markdown("""
-                <h2 style='
-                    font-family: Georgia, serif;
-                    font-size: 28px;
-                    font-weight: bold;
-                    color: #8e44ad;
-                    margin-top: 0;
-                    margin-bottom: 1rem;
-                '>
-                    🏛️ Heritage Gems
-                </h2>
-            """, unsafe_allow_html=True)
-
+        with st.expander("Heritage Gems", expanded=True):
+            st.markdown("""<h2 style='font-family: Georgia; font-size: 28px; font-weight: bold; color: #000;'>🏛️ Heritage Gems</h2>""", unsafe_allow_html=True)
             for site in data["heritage"]:
                 st.markdown(f"""
-                <div style='
-                    background-color: #f0f8ff;
-                    padding: 15px;
-                    border-radius: 12px;
-                    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 15px;
-                '>
-                    <h4 style='color:#2c3e50; font-size:20px;'>{site['name']}</h4>
-                    <img src="{site['image']}" width="100%" style="border-radius: 8px;">
+                <div class='card'>
+                    <h4>{site['name']}</h4>
+                    <img src="{site['image']}" width="100%" class='culture-img'>
                     <p>{site['desc']}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
-        # Artifacts Section
-        st.markdown("<h2 class='section-title'>🛍️ Artisan Treasures</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 class='section-title'>🍭️ Artisan Treasures</h2>", unsafe_allow_html=True)
         for artifact in data["artifacts"]:
             st.markdown(f"""
-            <div style='
-                background-color: #f0f8ff;
-                padding: 15px;
-                border-radius: 12px;
-                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-                margin-bottom: 15px;
-            '>
+            <div class='card'>
                 <h4>🎨 {artifact['name']}</h4>
-                <img src="{artifact['image']}" width="100%" style="border-radius: 8px;">
+                <img src="{artifact['image']}" width="100%" class='culture-img'>
                 <p>{artifact['desc']}</p>
             </div>
             """, unsafe_allow_html=True)
 
     with col2:
-        # Festivals Section
-        with st.expander("", expanded=True):
-            st.markdown("""
-                <h2 style='
-                    font-family: Georgia, serif;
-                    font-size: 28px;
-                    font-weight: bold;
-                    color: #d35400;
-                    margin-top: 0;
-                    margin-bottom: 1rem;
-                '>
-                    🎭 Cultural Extravaganza
-                </h2>
-            """, unsafe_allow_html=True)
-
+        with st.expander("Cultural Extravaganza", expanded=True):
+            st.markdown("""<h2 style='font-family: Georgia; font-size: 28px; font-weight: bold;'>🎝 Cultural Extravaganza</h2>""", unsafe_allow_html=True)
             for festival in data["festivals"]:
                 st.markdown(f"""
-                <div style='
-                    background-color: #fcf3cf;
-                    padding: 15px;
-                    border-radius: 12px;
-                    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 15px;
-                '>
+                <div class='card' style='background-color:#fcf3cf;'>
                     <h4>{festival['name']}</h4>
-                    <img src="{festival['image']}" width="100%" style="border-radius: 8px;">
+                    <img src="{festival['image']}" width="100%" class='culture-img'>
                     <p>{festival['desc']}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
-        # Foods Section
-        st.markdown("<h2 class='section-title'>🍴 Culinary Treasures</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 class='section-title'>🍽️ Culinary Treasures</h2>", unsafe_allow_html=True)
         for food in data["foods"]:
             st.markdown(f"""
-            <div style='
-                background-color: #eafaf1;
-                padding: 15px;
-                border-radius: 12px;
-                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-                margin-bottom: 15px;
-            '>
+            <div class='card' style='background-color:#fef9e7;'>
                 <h4>🥘 {food['name']}</h4>
-                <img src="{food['image']}" width="100%" style="border-radius: 8px;">
+                <img src="{food['image']}" width="100%" class='culture-img'>
                 <p>{food['desc']}</p>
             </div>
             """, unsafe_allow_html=True)
 
-    # Navigation Buttons
+    # Navigation
     st.markdown("<br>", unsafe_allow_html=True)
     c1, c2 = st.columns([1, 4])
     with c1:
@@ -347,7 +309,6 @@ def state_description_page():
         if st.button("🏠 Back to Home"):
             st.session_state.page = "home"
             st.rerun()
-
 
 # ---- Responsible Tourism Guide ----
 def responsible_tourism_guide_page():
