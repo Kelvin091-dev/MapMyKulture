@@ -16,18 +16,18 @@ STATE_DATA = {
         "description": "The Land of Kings, where desert sands whisper tales of valor and vibrant hues dance in palace corridors.",
         "heritage": [
             {"name": "Amber Fort", "lat": 26.9855, "lon": 75.8513,
-             "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Amer_Fort_%28Amber_Fort%29.jpg",
+             "image": "https://indiaholidaymall.com/images/highlights/6-Top-Rajasthan-Tourist-Places.jpg",
              "desc": "Majestic hilltop fortress with intricate mirror work"},
             {"name": "Stepwells of Abhaneri", "lat": 27.0074, "lon": 76.6076,
-             "image": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Stepwell_Abhaneri.jpg",
+             "image": "https://indiaholidaymall.com/images/highlights/6-Top-Rajasthan-Tourist-Places.jpg",
              "desc": "Ancient architectural marvel for water conservation"}
         ],
         "festivals": [
             {"name": "Pushkar Camel Fair", "lat": 26.4897, "lon": 74.5517,
-             "image": "https://upload.wikimedia.org/wikipedia/commons/4/49/Pushkar_Cattle_Fair_2009.jpg",
+             "image": "https://shivshankartirthyatra.com/blog/wp-content/uploads/2023/08/Rajasthan-Land-of-Maharajas-and-Vibrant-Heritage-1.jpg",
              "desc": "Vibrant desert carnival with camel races"},
             {"name": "Desert Festival", "lat": 26.9124, "lon": 70.9122,
-             "image": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Jaisalmer_Desert_Festival_2018.jpg",
+             "image": "https://shivshankartirthyatra.com/blog/wp-content/uploads/2023/08/Rajasthan-Land-of-Maharajas-and-Vibrant-Heritage-1.jpg",
              "desc": "Cultural extravaganza under golden sands"}
         ],
         "foods": [
@@ -86,44 +86,37 @@ STATE_DATA = {
 
 # ---- Enhanced Styles ----
 def inject_style():
-    banner_url = "https://t4.ftcdn.net/jpg/11/02/86/89/360_F_1102868968_To7xQ8HffJwpKD6rz6LogPeAWmJeOWfX.jpg"
+    banner_url = "https://www.poojn.in/wp-content/uploads/2025/05/Maharashtras-UNESCO-World-Heritage-Sites-A-Complete-Guide-With-Photos.jpeg.jpg"
     st.markdown(f"""
     <style>
     .stApp {{
-        background: linear-gradient(rgba(255,165,0,0.2), rgba(255,255,255,0.3)),
+        background: linear-gradient(rgba(255,165,0,0.2), rgba(255,255,255,0.5)),
                     url('{banner_url}');
         background-size: cover;
         background-attachment: fixed;
         font-family: 'Palatino Linotype', 'Book Antiqua', serif;
     }}
-    .card {{
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: transform 0.3s;
-        backdrop-filter: blur(5px);
-    }}
+        .card {{
+            background-color: #fdf3e7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }}
     .card:hover {{
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     }}
-    .section-title {{
-        color: #d35400;
-        border-left: 5px solid #e67e22;
-        padding-left: 15px;
-        margin: 30px 0 20px 0;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }}
-    .culture-img {{
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        margin: 10px 0;
-        height: 250px;
-        object-fit: cover;
-        border: 2px solid #ffffff;
-    }}
+      .section-title {{
+            font-size: 20px;
+            margin-top: 20px;
+            color: #2c3e50;
+        }}
+     .culture-img {{
+            border-radius: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }}
     .map-container {{
         border: 3px solid #e67e22;
         border-radius: 15px;
@@ -221,70 +214,131 @@ def state_map_page():
 
 
 
-# ---- State Description Page ----
+## ---- State Description Page ----
 def state_description_page():
     inject_style()
     selected_state = st.session_state.selected_state
     data = STATE_DATA[selected_state]
-    
+
+    # Title Header
     st.markdown(f"<h1 style='color:#c0392b; text-align:center;'>{selected_state} Cultural Odyssey</h1>", unsafe_allow_html=True)
-    
-    # State Intro
+
+    # "Land of Wonders" Section with 2 Images
     with st.container():
-        st.markdown(f"<div class='card'><h3 style='color:#16a085;'>🌄 Land of Wonders</h3><h4>{data['description']}</h4></div>", unsafe_allow_html=True)
-    
+        st.markdown(f"""
+        <div class='card'>
+            <h3 style='color:#16a085;'>🌄 Land of Wonders</h3>
+            <div style='display: flex; gap: 15px; justify-content: center;'>
+                <img src='https://static.toiimg.com/thumb/msid-87763412,width-1070,height-580,resizemode-75,imgsize-87763412,pt-32,y_pad-40/87763412.jpg' width='120' height='80' style='border-radius: 10px;' />
+                <img src='https://indiaholidaymall.com/images/highlights/6-Top-Rajasthan-Tourist-Places.jpg' width='120' height='80' style='border-radius: 10px;' />
+                <img src='https://shivshankartirthyatra.com/blog/wp-content/uploads/2023/08/Rajasthan-Land-of-Maharajas-and-Vibrant-Heritage-1.jpg' width='120' height='80' style='border-radius: 10px;' />
+            </div>
+            <h4>{data['description']}</h4>
+        </div>
+        """, unsafe_allow_html=True)
+
     # Main Content Columns
-    col1, col2 = st.columns([1,1])
-    
+    col1, col2 = st.columns([1, 1])
+
     with col1:
         # Heritage Section
-        with st.expander("🏛️ Hidden Heritage Gems", expanded=True):
+        with st.expander("", expanded=True):
+            st.markdown("""
+                <h2 style='
+                    font-family: Georgia, serif;
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #8e44ad;
+                    margin-top: 0;
+                    margin-bottom: 1rem;
+                '>
+                    🏛️ Heritage Gems
+                </h2>
+            """, unsafe_allow_html=True)
+
             for site in data["heritage"]:
                 st.markdown(f"""
-                <div class='card'>
-                    <h4>{site['name']}</h4>
-                    <img src="{site['image']}" class='culture-img' width="100%">
+                <div style='
+                    background-color: #f0f8ff;
+                    padding: 15px;
+                    border-radius: 12px;
+                    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 15px;
+                '>
+                    <h4 style='color:#2c3e50; font-size:20px;'>{site['name']}</h4>
+                    <img src="{site['image']}" width="100%" style="border-radius: 8px;">
                     <p>{site['desc']}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                
+
         # Artifacts Section
         st.markdown("<h2 class='section-title'>🛍️ Artisan Treasures</h2>", unsafe_allow_html=True)
         for artifact in data["artifacts"]:
             st.markdown(f"""
-            <div class='card'>
+            <div style='
+                background-color: #f0f8ff;
+                padding: 15px;
+                border-radius: 12px;
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 15px;
+            '>
                 <h4>🎨 {artifact['name']}</h4>
-                <img src="{artifact['image']}" class='culture-img' width="100%">
+                <img src="{artifact['image']}" width="100%" style="border-radius: 8px;">
                 <p>{artifact['desc']}</p>
             </div>
             """, unsafe_allow_html=True)
 
     with col2:
         # Festivals Section
-        with st.expander("🎭 Cultural Extravaganza", expanded=True):
+        with st.expander("", expanded=True):
+            st.markdown("""
+                <h2 style='
+                    font-family: Georgia, serif;
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #d35400;
+                    margin-top: 0;
+                    margin-bottom: 1rem;
+                '>
+                    🎭 Cultural Extravaganza
+                </h2>
+            """, unsafe_allow_html=True)
+
             for festival in data["festivals"]:
                 st.markdown(f"""
-                <div class='card'>
+                <div style='
+                    background-color: #fcf3cf;
+                    padding: 15px;
+                    border-radius: 12px;
+                    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 15px;
+                '>
                     <h4>{festival['name']}</h4>
-                    <img src="{festival['image']}" class='culture-img' width="100%">
+                    <img src="{festival['image']}" width="100%" style="border-radius: 8px;">
                     <p>{festival['desc']}</p>
                 </div>
                 """, unsafe_allow_html=True)
-        
+
         # Foods Section
         st.markdown("<h2 class='section-title'>🍴 Culinary Treasures</h2>", unsafe_allow_html=True)
         for food in data["foods"]:
             st.markdown(f"""
-            <div class='card'>
+            <div style='
+                background-color: #eafaf1;
+                padding: 15px;
+                border-radius: 12px;
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 15px;
+            '>
                 <h4>🥘 {food['name']}</h4>
-                <img src="{food['image']}" class='culture-img' width="100%">
+                <img src="{food['image']}" width="100%" style="border-radius: 8px;">
                 <p>{food['desc']}</p>
             </div>
             """, unsafe_allow_html=True)
 
-    # Navigation
+    # Navigation Buttons
     st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2 = st.columns([1,4])
+    c1, c2 = st.columns([1, 4])
     with c1:
         if st.button("🗺️ Back to Map"):
             st.session_state.page = "state_map"
@@ -293,6 +347,7 @@ def state_description_page():
         if st.button("🏠 Back to Home"):
             st.session_state.page = "home"
             st.rerun()
+
 
 # ---- Responsible Tourism Guide ----
 def responsible_tourism_guide_page():
