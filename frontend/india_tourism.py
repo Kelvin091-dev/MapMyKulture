@@ -158,14 +158,24 @@ def home_page():
             st.session_state.page = "state_map"
             st.session_state.selected_state = selected_state
             st.rerun()
+## ---- State Map Page ----
 # ---- State Map Page ----
 def state_map_page():
     inject_style()
     selected_state = st.session_state.selected_state
     data = STATE_DATA[selected_state]
     
+    # Heading with Cultural Map Title
     st.markdown(f"<h2 style='color:#c0392b;'>{selected_state} Cultural Map</h2>", unsafe_allow_html=True)
     
+    # Single Map Icon under the heading
+    st.markdown("""
+        <div style='display: flex; justify-content: center; padding-bottom: 15px;'>
+            <img src='https://cdn-icons-png.flaticon.com/128/854/854878.png' width='60' title='Map Icon'>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Initialize the Folium Map
     m = folium.Map(location=[data['heritage'][0]['lat'], data['heritage'][0]['lon']], zoom_start=7)
     
     # Heritage Markers
@@ -177,7 +187,7 @@ def state_map_page():
                 sticky=True,
                 permanent=False
             ),
-            icon=folium.Icon(color="beige", icon="university", prefix="fa")
+            icon=folium.Icon(color="Red", icon="monument", prefix="fa")
         ).add_to(m)
     
     # Festival Markers
@@ -189,15 +199,17 @@ def state_map_page():
                 sticky=True,
                 permanent=False
             ),
-            icon=folium.Icon(color="orange", icon="music", prefix="fa")
+            icon=folium.Icon(color="blue", icon="guitar", prefix="fa")
         ).add_to(m)
 
+    # Map Display
     with st.container():
         st.markdown("<div class='map-container'>", unsafe_allow_html=True)
         folium_static(m, width=1000, height=500)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1,4])
+    # Navigation Buttons
+    col1, col2 = st.columns([1, 4])
     with col1:
         if st.button("← Back to Home"):
             st.session_state.page = "home"
@@ -206,6 +218,8 @@ def state_map_page():
         if st.button("Explore Cultural Details →"):
             st.session_state.page = "state_description"
             st.rerun()
+
+
 
 # ---- State Description Page ----
 def state_description_page():
