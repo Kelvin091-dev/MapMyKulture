@@ -440,6 +440,9 @@ def state_details_page():
     if st.button("← Back to Map", key="back_button"):
         st.session_state.page = "state_map"
         st.rerun()
+    if st.button("← Back to Home", key="home_button"):
+        st.session_state.page = "home"
+        st.rerun()
 
 def fetch_state_details(state_id):
     conn = get_snowflake_connection()
