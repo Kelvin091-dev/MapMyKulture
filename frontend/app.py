@@ -212,6 +212,24 @@ def inject_style():
 
 # ---- Page Components ----
 def home_page():
+   
+    # --- NEW CODE START (add at the beginning, before existing content) ---
+    st.sidebar.markdown("## 🌐 Language Settings")
+    language_code = st.sidebar.selectbox(
+        "Choose Language",
+        options=["en", "hi", "ta", "te", "bn"],  # English, Hindi, Tamil, Telugu, Bengali
+        format_func=lambda x: {
+            "en": "English",
+            "hi": "हिंदी",
+            "ta": "தமிழ்",
+            "te": "తెలుగు",
+            "bn": "বাংলা"
+        }[x]
+    )
+    st.session_state.language = language_code
+    # --- NEW CODE END ---
+
+    # ... REST OF YOUR EXISTING home_page() CODE ...
     inject_style()
     st.markdown("<h1 class='ancient-title'>MapMy Kulture</h1>", unsafe_allow_html=True)
     st.markdown("<h4 class='ancient-subtitle'>Discover India's Cultural Tapestry</h4>", unsafe_allow_html=True)
@@ -228,6 +246,14 @@ def home_page():
             st.session_state.page = "state_map"
             st.session_state.selected_state = selected_state
             st.rerun()
+    # ---- ADD THIS NEW FUNCTION (place it near other utility functions) ----
+def display_translated(text):
+    """Only translates if language is not English."""
+    from translations import translate_text  # Import from our new file
+    
+    if 'language' in st.session_state and st.session_state.language != 'en':
+        return translate_text(text, st.session_state.language)
+    return text
 
 
 def state_map_page():
@@ -366,8 +392,8 @@ def state_details_page():
 
             config = TABLE_CONFIG[table_name]
             for item in items:
-                title = item[config['title'].lower()]
-                description = item[config['desc'].lower()]
+                title = display_translated(item[config['title'].lower()])
+                description = display_translated(item[config['desc'].lower()])
                 image_url = item.get(config['img'].lower()) if config['img'] else None
 
                 with st.container():
