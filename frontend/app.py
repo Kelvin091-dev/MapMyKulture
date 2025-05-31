@@ -125,6 +125,8 @@ def inject_style():
     banner_url = "https://www.poojn.in/wp-content/uploads/2025/05/Maharashtras-UNESCO-World-Heritage-Sites-A-Complete-Guide-With-Photos.jpeg.jpg"
     st.markdown(f"""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Eater&display=swap');
+    
     .stApp {{
         background: linear-gradient(rgba(255,165,0,0.2), rgba(255,255,255,0.5)),
                     url('{banner_url}');
@@ -132,6 +134,28 @@ def inject_style():
         background-attachment: fixed;
         font-family: 'Palatino Linotype', 'Book Antiqua', serif;
     }}
+    
+    .ancient-title {{
+        font-family: 'Eater', cursive;
+        font-size: 4rem;
+        text-align: center;
+        color: #8B0000;
+        text-shadow: 2px 2px 4px #000000;
+        letter-spacing: 2px;
+        margin-bottom: 0;
+        text-transform: uppercase;
+    }}
+    
+    .ancient-subtitle {{
+        font-family: 'Eater', cursive;
+        font-size: 1.8rem;
+        text-align: center;
+        color: #8B0000;
+        text-shadow: 1px 1px 2px #000000;
+        margin-top: 0;
+        letter-spacing: 1px;
+    }}
+    
     .card {{
         background-color: white !important;
         color: black !important;
@@ -189,9 +213,8 @@ def inject_style():
 # ---- Page Components ----
 def home_page():
     inject_style()
-    st.markdown("<h1 style='text-align:center;'>MapMy Kulture</h1>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align:center; color:#16a085;'>Discover India's Cultural Tapestry</h4>",
-                unsafe_allow_html=True)
+    st.markdown("<h1 class='ancient-title'>MapMy Kulture</h1>", unsafe_allow_html=True)
+    st.markdown("<h4 class='ancient-subtitle'>Discover India's Cultural Tapestry</h4>", unsafe_allow_html=True)
 
     states = fetch_states()
     if not states:
@@ -279,11 +302,11 @@ def state_details_page():
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         padding: 10px 15px;
-        
         border: none;
-      display: inline-block; /* Shrinks to content size */
-    text-align: center;
-}}
+        display: inline-block;
+        text-align: center;
+    }}
+    
     .card-title {{
         font-size: 1.3rem;
         font-weight: bold;
@@ -308,7 +331,6 @@ def state_details_page():
         text-align: center;
     }}
     
-   
     .stImage img {{
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -320,7 +342,6 @@ def state_details_page():
         }}
     }}
     </style>
-    
     """, unsafe_allow_html=True)
 
     TABLE_CONFIG = {
@@ -362,7 +383,7 @@ def state_details_page():
                             st.markdown("<div class='image-container'>", unsafe_allow_html=True)
                             st.image(
                                 image_url,
-                                width=250,  # Slightly larger fixed width
+                                width=250,
                                 caption=title,
                                 output_format="auto"
                             )
@@ -429,8 +450,6 @@ def fetch_state_details(state_id):
         conn.close()
 
     return data
-
-
 
 # ---- Main App Flow ----
 if "page" not in st.session_state:
